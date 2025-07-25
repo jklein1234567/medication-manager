@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "target": "es2020",
+      "module": "commonjs",
+      "lib": ["ES2020"],
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "resolveJsonModule": true,
+      "outDir": "dist",
+      "types": ["node"]   // 👈 this is the critical line
+    },
+    "include": ["src"]
+  }
+  

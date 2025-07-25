@@ -1,0 +1,62 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime files
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Node
+node_modules/
+.env
+.env.*.local
+dist/
+build/
+.cache/
+.next/
+out/
+
+# Serverless
+.serverless/
+.aws-sam/
+.serverless_plugins/
+
+# TypeScript
+*.tsbuildinfo
+
+# Vite/React
+.vite/
+frontend/dist/
+frontend/.vite/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Mac system files
+.DS_Store
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Optional frontend dev output
+frontend/node_modules/
+frontend/coverage/
+frontend/dist/
+frontend/.next/
+
+# Backend
+backend/node_modules/
+backend/.serverless/
+backend/coverage/
+backend/dist/
+
+# Logs and test snapshots
+*.log
+*.snap

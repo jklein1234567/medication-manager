@@ -1,0 +1,69 @@
+service: medication-manager
+frameworkVersion: "^4.17.2"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: dev
+  environment:
+    DYNAMO_TABLE: medications
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:Scan
+            - dynamodb:UpdateItem
+          Resource:
+            - arn:aws:dynamodb:us-east-1:178173414121:table/medications
+  apiGateway:
+    apiKeys:
+      - myDevApiKey
+
+functions:
+  createMedication:
+    handler: src/handlers/createMedication.handler
+    events:
+      - http:
+          path: medications
+          method: post
+          cors: true
+          private: true
+
+  getMedications:
+    handler: src/handlers/getMedications.handler
+    events:
+      - http:
+          path: medications
+          method: get
+          cors: true
+          private: true
+
+  markAsTaken:
+    handler: src/handlers/markAsTaken.handler
+    events:
+      - http:
+          path: medications/{id}/take
+          method: post
+          cors: true
+          private: true
+
+plugins:
+  - serverless-offline
+
+resources:
+  Resources:
+    MedicationsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: medications
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
