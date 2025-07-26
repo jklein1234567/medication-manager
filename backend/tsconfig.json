@@ -3,12 +3,11 @@
       "target": "es2020",
       "module": "commonjs",
       "lib": ["ES2020"],
-      "moduleResolution": "node",
+      "types": ["node", "jest"],
       "esModuleInterop": true,
       "resolveJsonModule": true,
-      "outDir": "dist",
-      "types": ["node"]   // 👈 this is the critical line
+      "outDir": "dist"
     },
-    "include": ["src"]
+    "include": ["src", "src/**/*.test.ts"]
   }
   

@@ -12,14 +12,20 @@
   "type": "commonjs",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.152",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.1.0",
+    "aws-sdk-client-mock": "^4.1.0",
+    "jest": "^30.0.5",
+    "jest-mock-extended": "^4.0.0",
     "serverless": "^4.17.2",
     "serverless-offline": "^14.4.0",
+    "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {
     "aws-sdk": "^2.1692.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "winston": "^3.17.0"
   }
 }
