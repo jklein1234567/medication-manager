@@ -7,28 +7,29 @@ const db = new DynamoDB.DocumentClient();
 export const handler: APIGatewayProxyHandler = async () => {
   try {
     logger.info("Fetching medications from DynamoDB");
-
-    const result = await db
-      .scan({
-        TableName: process.env.DYNAMO_TABLE!,
-      })
-      .promise();
-
+    const result = await db.scan({
+      TableName: process.env.DYNAMO_TABLE!,
+    }).promise();
     logger.info("Fetched medications count", { count: result.Items?.length });
 
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
       body: JSON.stringify(result.Items),
     };
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Create medication failed: ${err.message}`, {
       error: err,
       stack: err.stack,
-    });
-
-    return {
+    });    return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Internal server error", details: err }),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+      body: JSON.stringify({ message: "Internal server error", details: err.message }),
     };
   }
 };
+

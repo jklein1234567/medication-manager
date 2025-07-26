@@ -21,7 +21,7 @@ provider:
             - arn:aws:dynamodb:us-east-1:178173414121:table/medications
   apiGateway:
     apiKeys:
-      - myDevApiKey
+      - name: myDevApiKey
 
 functions:
   createMedication:
@@ -30,8 +30,18 @@ functions:
       - http:
           path: medications
           method: post
-          cors: true
-          private: true
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - x-api-key
+              - Accept
+            allowCredentials: false
+          # private: true
 
   getMedications:
     handler: src/handlers/getMedications.handler
@@ -39,8 +49,18 @@ functions:
       - http:
           path: medications
           method: get
-          cors: true
-          private: true
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - x-api-key
+              - Accept
+            allowCredentials: false
+          # private: true
 
   markAsTaken:
     handler: src/handlers/markAsTaken.handler
@@ -48,7 +68,17 @@ functions:
       - http:
           path: medications/{id}/take
           method: post
-          cors: true
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - x-api-key
+              - Accept
+            allowCredentials: false
           private: true
 
 plugins:

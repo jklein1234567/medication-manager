@@ -32,6 +32,9 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
     return {
       statusCode: 201,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
       body: JSON.stringify(medication),
     };
   } catch (err) {
@@ -40,9 +43,12 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         stack: err.stack,
       });
       
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Could not create medication', details: err }),
-    };
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({ error: 'Could not create medication', details: err }),
+      };
   }
 };
