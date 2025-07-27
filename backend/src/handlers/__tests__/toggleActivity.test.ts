@@ -35,22 +35,29 @@ describe("toggleActivity handler", () => {
   });
 
   it("toggles isActive successfully", async () => {
-    mockSend.mockResolvedValue({});
-
+    mockSend.mockResolvedValueOnce({
+      Item: {
+        id: { S: "abc" },
+        isActive: { BOOL: true },
+      },
+    }); // First call: GetItemCommand
+  
+    mockSend.mockResolvedValueOnce({}); // Second call: UpdateItemCommand
+  
     const event = {
       pathParameters: { id: "abc" },
     } as unknown as APIGatewayProxyEvent;
-
-    const result = (await handler(
-      event,
-      dummyContext,
-      undefined
-    )) as APIGatewayProxyResult;
-
-    expect(mockSend).toHaveBeenCalledWith(expect.any(UpdateItemCommand));
+  
+    const result = (await handler(event, dummyContext, undefined)) as APIGatewayProxyResult;
+  
+    // Check 2nd call (UpdateItemCommand)
+    const updateCallArg = mockSend.mock.calls[1][0];
+    expect(updateCallArg).toBeInstanceOf(UpdateItemCommand);
+  
     expect(result.statusCode).toEqual(200);
     expect(JSON.parse(result.body).message).toEqual("Toggled isActive");
   });
+  
 
   it("returns 500 on DynamoDB failure", async () => {
     mockSend.mockRejectedValue(new Error("Toggle error"));

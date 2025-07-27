@@ -62,8 +62,8 @@ functions:
             allowCredentials: false
           # private: true
 
-  markAsTaken:
-    handler: src/handlers/markAsTaken.handler
+  updateTakeLog:
+    handler: src/handlers/updateTakeLog.handler
     events:
       - http:
           path: medications/{id}/take
