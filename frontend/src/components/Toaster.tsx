@@ -1,14 +1,13 @@
-import { ToastType } from "../../../types";
+import type { ToastType } from "../../../types";
+import type { FC } from "react";
 
-export const Toaster = ({
-  message,
-  type,
-  onClose,
-}: {
+interface Props {
   message: string;
   type: ToastType;
   onClose: () => void;
-}) => {
+}
+
+export const Toaster: FC<Props> = ({ message, type, onClose }: Props) => {
   return (
     <div
       className={`fixed top-4 right-4 px-4 py-2 rounded shadow-md text-white z-50 ${

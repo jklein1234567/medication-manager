@@ -1,11 +1,11 @@
 import { useState } from "react";
+import type { FC, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { addMedication } from "../api";
-import { Navbar } from "../components/Navbar";
 import { Toaster } from "../components";
 import { Day, ScheduleType, ToastType } from "../../../types";
 
-export const AddMedication = () => {
+export const AddMedication: FC = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
@@ -18,7 +18,7 @@ export const AddMedication = () => {
     type: ToastType;
   } | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
       await addMedication({
@@ -45,7 +45,6 @@ export const AddMedication = () => {
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
-      <Navbar />
       {toast && (
         <Toaster
           message={toast.message}
@@ -53,6 +52,7 @@ export const AddMedication = () => {
           onClose={() => setToast(null)}
         />
       )}
+       <h1 className="text-2xl font-bold mb-6 text-center">Add Medication</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           className="w-full border p-2 rounded"
