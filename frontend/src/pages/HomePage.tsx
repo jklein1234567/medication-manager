@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import type { FC } from "react";
 import moment from "moment";
-import { getMedications, markAsTaken } from "../api";
+import { getMedications, updateTakeLog } from "../api";
 import { Toaster, Calendar, Modal } from "../components";
 import type { ToastType, Medication } from "../../../types";
+import type { Moment } from "moment";
 
 export const HomePage: FC = () => {
   const [currentDate, setCurrentDate] = useState(moment());
+  const [selectedDate, setSelectedDate] = useState<Moment | null>(null);
   const [meds, setMeds] = useState<Medication[]>([]);
   const [selectedMed, setSelectedMed] = useState<Medication | null>(null);
   const [toast, setToast] = useState<{
@@ -18,9 +20,11 @@ export const HomePage: FC = () => {
     getMedications().then(setMeds);
   }, []);
 
-  const handleMarkAsTaken = async (id: string) => {
+  const handleUpdateTakeLog = async (id: string) => {
+    if (!selectedDate) return;
+
     try {
-      await markAsTaken(id);
+      await updateTakeLog(id, selectedDate.format("YYYY-MM-DD"));
       const updated = await getMedications();
       setMeds(updated);
       setToast({ message: "Marked as taken successfully", type: "success" });
@@ -28,6 +32,7 @@ export const HomePage: FC = () => {
       setToast({ message: "Error marking medication", type: "error" });
     }
     setSelectedMed(null);
+    setSelectedDate(null);
   };
 
   return (
@@ -44,15 +49,19 @@ export const HomePage: FC = () => {
         currentDate={currentDate}
         meds={meds}
         setCurrentDate={setCurrentDate}
-        setSelectedMed={setSelectedMed}
+        setSelectedMed={(med) => {
+          setSelectedMed(med);
+        }}
+        setSelectedDate={setSelectedDate}
       />
 
-      {selectedMed && (
+      {selectedMed && selectedDate && (
         <Modal
           selectedMed={selectedMed}
+          selectedDate={selectedDate}
           setSelectedMed={setSelectedMed}
           setMeds={setMeds}
-          handleMarkAsTaken={handleMarkAsTaken}
+          handleUpdateTakeLog={handleUpdateTakeLog}
         />
       )}
     </div>

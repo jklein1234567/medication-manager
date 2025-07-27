@@ -1,5 +1,5 @@
-import { handler } from "../updateTakeLog"; // renamed handler
-import { DynamoDBClient, UpdateItemCommand, GetItemCommand } from "@aws-sdk/client-dynamodb";
+import { handler } from "../updateTakeLog";
+import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 import type {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
@@ -22,6 +22,7 @@ describe("updateTakeLog", () => {
   it("returns 400 if ID is missing", async () => {
     const dummyEvent = {
       pathParameters: {},
+      body: JSON.stringify({ date: "2025-07-27" }),
     } as unknown as APIGatewayProxyEvent;
 
     const result = (await handler(
@@ -33,8 +34,25 @@ describe("updateTakeLog", () => {
     expect(result.body).toContain("Missing ID");
   });
 
-  it("adds today's date to takenLog if not already present", async () => {
-    // Mock getItem returning no takenLog
+  it("returns 400 if date is missing from body", async () => {
+    const event = {
+      pathParameters: { id: "123" },
+      body: JSON.stringify({}),
+    } as unknown as APIGatewayProxyEvent;
+
+    const result = (await handler(
+      event,
+      dummyContext,
+      undefined
+    )) as APIGatewayProxyResult;
+
+    expect(result.statusCode).toEqual(400);
+    expect(result.body).toContain("Missing or invalid 'date'");
+  });
+
+  it("adds date to takenLog if not already present", async () => {
+    const date = "2025-07-27";
+
     mockSend.mockImplementationOnce(() =>
       Promise.resolve({
         Item: {
@@ -44,14 +62,18 @@ describe("updateTakeLog", () => {
       })
     );
 
-    // Mock update command
     mockSend.mockImplementationOnce(() => Promise.resolve({}));
 
     const event = {
       pathParameters: { id: "123" },
+      body: JSON.stringify({ date }),
     } as unknown as APIGatewayProxyEvent;
 
-    const result = (await handler(event, dummyContext, undefined)) as APIGatewayProxyResult;
+    const result = (await handler(
+      event,
+      dummyContext,
+      undefined
+    )) as APIGatewayProxyResult;
 
     expect(mockSend).toHaveBeenCalledTimes(2);
     expect(mockSend.mock.calls[1][0]).toBeInstanceOf(UpdateItemCommand);
@@ -59,29 +81,30 @@ describe("updateTakeLog", () => {
     expect(JSON.parse(result.body).message).toEqual("Marked as taken");
   });
 
-  it("removes today's date from takenLog if already present", async () => {
-    const today = "2025-07-27";
+  it("removes date from takenLog if already present", async () => {
+    const date = "2025-07-27";
 
-    // Mock getItem returning today's date in takenLog
     mockSend.mockImplementationOnce(() =>
       Promise.resolve({
         Item: {
           id: { S: "123" },
-          takenLog: {
-            L: [{ S: today }],
-          },
+          takenLog: { L: [{ S: date }] },
         },
       })
     );
 
-    // Mock update command
     mockSend.mockImplementationOnce(() => Promise.resolve({}));
 
     const event = {
       pathParameters: { id: "123" },
+      body: JSON.stringify({ date }),
     } as unknown as APIGatewayProxyEvent;
 
-    const result = (await handler(event, dummyContext, undefined)) as APIGatewayProxyResult;
+    const result = (await handler(
+      event,
+      dummyContext,
+      undefined
+    )) as APIGatewayProxyResult;
 
     expect(mockSend).toHaveBeenCalledTimes(2);
     expect(mockSend.mock.calls[1][0]).toBeInstanceOf(UpdateItemCommand);
@@ -94,6 +117,7 @@ describe("updateTakeLog", () => {
 
     const event = {
       pathParameters: { id: "123" },
+      body: JSON.stringify({ date: "2025-07-27" }),
     } as unknown as APIGatewayProxyEvent;
 
     const result = (await handler(
@@ -103,6 +127,8 @@ describe("updateTakeLog", () => {
     )) as APIGatewayProxyResult;
 
     expect(result.statusCode).toEqual(500);
-    expect(JSON.parse(result.body).message).toEqual("Failed to update takenLog");
+    expect(JSON.parse(result.body).message).toEqual(
+      "Failed to update takenLog"
+    );
   });
 });

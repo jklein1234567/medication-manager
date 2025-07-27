@@ -20,12 +20,16 @@ export const addMedication = async (data: any) => {
   return res.data;
 };
 
-export const markAsTaken = async (id: string) => {
-  const res = await axios.put(`${VITE_API_BASE}/medications/${id}/take`, {}, {
-    headers: {
-      'x-api-key': VITE_API_KEY,
-    },
-  });
+export const updateTakeLog = async (id: string, date: string) => {
+  const res = await axios.put(
+    `${VITE_API_BASE}/medications/${id}/take`,
+    { date },
+    {
+      headers: {
+        'x-api-key': VITE_API_KEY,
+      },
+    }
+  );
   return res.data;
 };
 

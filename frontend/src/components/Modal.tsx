@@ -1,25 +1,29 @@
 import type { FC } from "react";
 import moment from "moment";
+import type { Moment } from "moment";
 import type { Medication } from "../../../types";
-import { toggleActivity, getMedications } from "../api"; // adjust path as needed
-import { useState } from "react";
+import { toggleActivity, getMedications } from "../api";
 
 interface Props {
   selectedMed: Medication;
+  selectedDate: Moment;
   setSelectedMed: (med: Medication | null) => void;
   setMeds: (meds: Medication[]) => void;
-  handleMarkAsTaken: (id: string) => void;
+  handleUpdateTakeLog: (id: string) => void;
 }
 
 export const Modal: FC<Props> = ({
   selectedMed,
+  selectedDate,
   setSelectedMed,
   setMeds,
-  handleMarkAsTaken,
+  handleUpdateTakeLog,
 }) => {
-  const { daysOfWeek, times, id, isActive } = selectedMed;
+  const { daysOfWeek, times, id, isActive, takenLog = [] } = selectedMed;
 
-  const isTodayOrBefore = moment().isSameOrAfter(moment(), "day");
+  const dateString = selectedDate.format("YYYY-MM-DD");
+
+  const isTakenOnSelectedDate = takenLog.includes(dateString);
 
   const handleToggleStatus = async () => {
     try {
@@ -41,7 +45,7 @@ export const Modal: FC<Props> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="relative bg-white w-full max-w-xl mx-4 p-8 rounded-xl shadow-xl">
-        {/* Toggle Button in Top Right */}
+        {/* Toggle Active/Inactive Button */}
         <button
           className={`absolute top-4 right-4 px-3 py-1 text-sm rounded font-medium transition hover:cursor-pointer text-white ${
             isActive
@@ -71,14 +75,17 @@ export const Modal: FC<Props> = ({
         )}
 
         <div className="flex items-center gap-4">
-          {isTodayOrBefore && (
-            <button
-              className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition hover:cursor-pointer"
-              onClick={() => handleMarkAsTaken(selectedMed.id)}
-            >
-              Mark as Taken
-            </button>
-          )}
+          <button
+            className={`px-5 py-2 rounded-md text-white transition hover:cursor-pointer ${
+              isTakenOnSelectedDate
+                ? "bg-red-600 hover:bg-red-700"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
+            onClick={() => handleUpdateTakeLog(selectedMed.id)}
+          >
+            {isTakenOnSelectedDate ? "Mark as not taken" : "Mark as Taken"}
+          </button>
+
           <button
             className="text-gray-600 hover:underline text-sm hover:cursor-pointer"
             onClick={() => setSelectedMed(null)}

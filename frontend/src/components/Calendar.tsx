@@ -8,6 +8,7 @@ interface Props {
   meds: Medication[];
   setCurrentDate: (date: Moment) => void;
   setSelectedMed: (med: Medication) => void;
+  setSelectedDate: (date: Moment) => void;
 }
 
 export const Calendar: FC<Props> = ({
@@ -15,6 +16,7 @@ export const Calendar: FC<Props> = ({
   meds,
   setCurrentDate,
   setSelectedMed,
+  setSelectedDate,
 }: Props) => {
   const start = currentDate.clone().startOf("month");
   const end = currentDate.clone().endOf("month");
@@ -67,18 +69,18 @@ export const Calendar: FC<Props> = ({
       </div>
 
       <div className="grid grid-cols-7 gap-4">
-        {days.map((day) => {
-          const greyedOut = day.isBefore(moment(), "day");
-          const today = day.isSame(moment(), "day");
+        {days.map((calendarDay) => {
+          const greyedOut = calendarDay.isBefore(moment(), "day");
+          const today = calendarDay.isSame(moment(), "day");
           return (
             <div
-              key={day.toISOString()}
+              key={calendarDay.toISOString()}
               className={`border rounded p-2 min-h-[80px] ${
                 greyedOut ? "bg-gray-100 text-gray-400" : ""
               } ${today ? "bg-yellow-100 border-yellow-500" : ""}`}
             >
               <div className="flex flex-col gap-1 mt-1 text-sm font-semibold">
-                {day.format("D")}
+                {calendarDay.format("D")}
               </div>
               {meds
                 .filter(
@@ -86,19 +88,21 @@ export const Calendar: FC<Props> = ({
                     m.isActive &&
                     (m.scheduleType === "daily" ||
                       (m.scheduleType === "weekly" &&
-                        m.daysOfWeek?.includes(day.format("ddd") as Day)))
+                        m.daysOfWeek?.includes(calendarDay.format("ddd") as Day)))
                 )
                 .map((med) => {
-                  const isTaken = med.takenLog?.includes(
-                    day.format("YYYY-MM-DD")
-                  );
+                  const dateStr = calendarDay.format("YYYY-MM-DD");
+                  const isTaken = med.takenLog?.includes(dateStr);
                   return (
                     <button
                       key={med.id}
                       className={`flex mb-1 text-xs hover:cursor-pointer ${
                         greyedOut && !today ? "text-gray-400" : "text-blue-600"
                       } ${isTaken ? "line-through" : ""}`}
-                      onClick={() => setSelectedMed(med)}
+                      onClick={() => {
+                        setSelectedDate(calendarDay.clone());
+                        setSelectedMed(med);
+                      }}
                     >
                       {med.name}
                     </button>
