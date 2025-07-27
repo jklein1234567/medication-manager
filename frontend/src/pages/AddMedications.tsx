@@ -1,50 +1,109 @@
-import { useState } from 'react';
-import { addMedication } from '../api';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { addMedication } from "../api";
+import { Navbar } from "../components/Navbar";
+import { Toaster } from "../components";
+import { Day, ScheduleType, ToastType } from "../../../types";
 
 export const AddMedication = () => {
-  const [name, setName] = useState('');
-  const [scheduleType, setScheduleType] = useState<'daily' | 'weekly'>('daily');
-  const [times, setTimes] = useState('');
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    name: "",
+    scheduleType: ScheduleType.DAILY,
+    times: "",
+    daysOfWeek: [] as Day[],
+  });
+  const [toast, setToast] = useState<{
+    message: string;
+    type: ToastType;
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await addMedication({ name, scheduleType, times: times.split(',').map((t) => t.trim()) });
-    setName('');
-    setScheduleType('daily');
-    setTimes('');
+    try {
+      await addMedication({
+        ...form,
+        times: form.times.split(",").map((t) => t.trim()),
+        isActive: true,
+        takenLog: [],
+      });
+      setToast({ message: "Successfully added!", type: "success" });
+      setTimeout(() => navigate("/"), 3000);
+    } catch {
+      setToast({ message: "Failed to add medication", type: "error" });
+    }
+  };
+
+  const toggleDay = (day: Day) => {
+    setForm((prev) => ({
+      ...prev,
+      daysOfWeek: prev.daysOfWeek.includes(day)
+        ? prev.daysOfWeek.filter((d) => d !== day)
+        : [...prev.daysOfWeek, day],
+    }));
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-xl font-bold mb-4">Add New Medication</h1>
+    <div className="p-6 max-w-2xl mx-auto">
+      <Navbar />
+      {toast && (
+        <Toaster
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full border p-2 rounded"
           placeholder="Medication Name"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
           required
         />
+
         <select
-          value={scheduleType}
-          onChange={(e) => setScheduleType(e.target.value as 'daily' | 'weekly')}
-          className="w-full p-2 border rounded"
+          className="w-full border p-2 rounded"
+          value={form.scheduleType}
+          onChange={(e) =>
+            setForm({ ...form, scheduleType: e.target.value as ScheduleType })
+          }
         >
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
+          <option value={ScheduleType.DAILY}>Daily</option>
+          <option value={ScheduleType.WEEKLY}>Weekly</option>
+          <option value={ScheduleType.MONTHLY}>Monthly</option>
         </select>
+
         <input
-          value={times}
-          onChange={(e) => setTimes(e.target.value)}
-          className="w-full p-2 border rounded"
-          placeholder="Times (comma separated, e.g. 08:00,14:00)"
+          className="w-full border p-2 rounded"
+          placeholder="Times (e.g. 08:00, 20:00)"
+          value={form.times}
+          onChange={(e) => setForm({ ...form, times: e.target.value })}
           required
         />
+
+        {form.scheduleType === ScheduleType.WEEKLY && (
+          <div className="flex flex-wrap gap-2">
+            {Object.values(Day).map((d) => (
+              <button
+                type="button"
+                key={d}
+                className={`px-3 py-1 rounded border ${
+                  form.daysOfWeek.includes(d) ? "bg-blue-600 text-white" : ""
+                }`}
+                onClick={() => toggleDay(d)}
+              >
+                {d}
+              </button>
+            ))}
+          </div>
+        )}
+
         <button
           type="submit"
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          className="bg-blue-600 text-white px-4 py-2 rounded"
         >
-          Add Medication
+          Submit
         </button>
       </form>
     </div>
