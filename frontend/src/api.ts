@@ -21,7 +21,16 @@ export const addMedication = async (data: any) => {
 };
 
 export const markAsTaken = async (id: string) => {
-  const res = await axios.post(`${VITE_API_BASE}/medications/${id}/take`, {}, {
+  const res = await axios.put(`${VITE_API_BASE}/medications/${id}/take`, {}, {
+    headers: {
+      'x-api-key': VITE_API_KEY,
+    },
+  });
+  return res.data;
+};
+
+export const toggleActivity = async (id: string) => {
+  const res = await axios.put(`${VITE_API_BASE}/medications/${id}/toggle`, {}, {
     headers: {
       'x-api-key': VITE_API_KEY,
     },

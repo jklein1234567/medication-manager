@@ -74,10 +74,12 @@ export const Calendar: FC<Props> = ({
             <div
               key={day.toISOString()}
               className={`border rounded p-2 min-h-[80px] ${
-                greyedOut ? "bg-gray-100 text-gray-400 pointer-events-none" : ""
+                greyedOut ? "bg-gray-100 text-gray-400" : ""
               } ${today ? "bg-yellow-100 border-yellow-500" : ""}`}
             >
-              <div className="flex flex-col gap-1 mt-1 text-sm font-semibold">{day.format("D")}</div>
+              <div className="flex flex-col gap-1 mt-1 text-sm font-semibold">
+                {day.format("D")}
+              </div>
               {meds
                 .filter(
                   (m) =>
@@ -85,18 +87,22 @@ export const Calendar: FC<Props> = ({
                     (m.scheduleType === "weekly" &&
                       m.daysOfWeek?.includes(day.format("ddd") as Day))
                 )
-                .map((med) => (
-                  <button
-                    key={med.id}
-                    className={`flex mb-1 text-xs hover:cursor-pointer ${
-                      greyedOut && !today ? "text-gray-400" : "text-blue-600"
-                    }`}
-                    disabled={greyedOut && !today}
-                    onClick={() => !greyedOut && setSelectedMed(med)}
-                  >
-                    {med.name}
-                  </button>
-                ))}
+                .map((med) => {
+                  const isTaken = med.takenLog?.includes(
+                    day.format("YYYY-MM-DD")
+                  );
+                  return (
+                    <button
+                      key={med.id}
+                      className={`flex mb-1 text-xs hover:cursor-pointer ${
+                        greyedOut && !today ? "text-gray-400" : "text-blue-600"
+                      } ${isTaken ? "line-through" : ""}`}
+                      onClick={() => setSelectedMed(med)}
+                    >
+                      {med.name}
+                    </button>
+                  );
+                })}
             </div>
           );
         })}

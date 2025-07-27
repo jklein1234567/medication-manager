@@ -51,6 +51,7 @@ export const HomePage: FC = () => {
         <Modal
           selectedMed={selectedMed}
           setSelectedMed={setSelectedMed}
+          setMeds={setMeds}
           handleMarkAsTaken={handleMarkAsTaken}
         />
       )}

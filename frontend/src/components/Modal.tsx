@@ -1,26 +1,38 @@
 import type { FC } from "react";
+import moment from "moment";
 import type { Medication } from "../../../types";
-import { markAsTaken } from "../api"; // adjust path as needed
+import { toggleActivity, getMedications } from "../api"; // adjust path as needed
 import { useState } from "react";
 
 interface Props {
   selectedMed: Medication;
   setSelectedMed: (med: Medication | null) => void;
+  setMeds: (meds: Medication[]) => void;
   handleMarkAsTaken: (id: string) => void;
 }
 
 export const Modal: FC<Props> = ({
   selectedMed,
   setSelectedMed,
+  setMeds,
   handleMarkAsTaken,
 }) => {
-  const { daysOfWeek, times, id } = selectedMed;
-  const [isActive, setIsActive] = useState(selectedMed.isActive);
+  const { daysOfWeek, times, id, isActive } = selectedMed;
+
+  console.log(isActive, 'isActive')
+
+  const isTodayOrBefore = moment().isSameOrAfter(moment(), "day");
 
   const handleToggleStatus = async () => {
     try {
-      await markAsTaken(id);
-      setIsActive(!isActive);
+      await toggleActivity(id);
+      const updatedMeds = await getMedications();
+      setMeds(updatedMeds);
+  
+      const updatedSelected = updatedMeds.find((med: Medication) => med.id === id);
+      if (updatedSelected) {
+        setSelectedMed(updatedSelected);
+      }
     } catch (error) {
       console.error("Failed to toggle active status", error);
     }
@@ -32,7 +44,9 @@ export const Modal: FC<Props> = ({
         {/* Toggle Button in Top Right */}
         <button
           className={`absolute top-4 right-4 px-3 py-1 text-sm rounded font-medium transition text-white ${
-            isActive ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 hover:bg-gray-500"
+            isActive
+              ? "bg-green-500 hover:bg-green-600"
+              : "bg-gray-400 hover:bg-gray-500"
           }`}
           onClick={handleToggleStatus}
         >
@@ -57,12 +71,14 @@ export const Modal: FC<Props> = ({
         )}
 
         <div className="flex items-center gap-4">
-          <button
-            className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition hover:cursor-pointer"
-            onClick={() => handleMarkAsTaken(selectedMed.id)}
-          >
-            Mark as Taken
-          </button>
+          {isTodayOrBefore && (
+            <button
+              className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition hover:cursor-pointer"
+              onClick={() => handleMarkAsTaken(selectedMed.id)}
+            >
+              Mark as Taken
+            </button>
+          )}
           <button
             className="text-gray-600 hover:underline text-sm hover:cursor-pointer"
             onClick={() => setSelectedMed(null)}
