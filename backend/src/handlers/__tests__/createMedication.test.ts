@@ -22,7 +22,7 @@ jest.mock('aws-sdk', () => {
   };
 });
 
-describe('createMedication handler', () => {
+describe('createMedication', () => {
   const mockData = {
     name: 'Advil',
     scheduleType: 'daily',
@@ -44,9 +44,9 @@ describe('createMedication handler', () => {
 
     const result = await handler(event, mockContext, mockCallback) as APIGatewayProxyResult;
 
-    expect(result.statusCode).toBe(201);
+    expect(result.statusCode).toEqual(201);
     const body = JSON.parse(result.body);
-    expect(body.name).toBe('Advil');
+    expect(body.name).toEqual('Advil');
   });
 
   it('handles DB errors', async () => {
@@ -58,8 +58,8 @@ describe('createMedication handler', () => {
 
     const result = await handler(event, mockContext, mockCallback) as APIGatewayProxyResult;
 
-    expect(result.statusCode).toBe(500);
+    expect(result.statusCode).toEqual(500);
     const body = JSON.parse(result.body);
-    expect(body.error).toBe('Could not create medication');
+    expect(body.error).toEqual('Could not create medication');
   });
 });

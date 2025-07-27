@@ -18,7 +18,7 @@ export enum ScheduleType {
     id: string;
     name: string;
     scheduleType: ScheduleType;
-    times: string[]; // changed to string[] for multiple times per day
+    times?: string[]; // changed to string[] for multiple times per day
     daysOfWeek?: Day[]; // only used for weekly schedule
     isActive: boolean;
     takenLog: string[]; // ISO datetime strings

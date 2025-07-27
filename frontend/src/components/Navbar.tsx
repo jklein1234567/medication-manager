@@ -13,7 +13,7 @@ export const Navbar: FC = () => (
       to="/add"
       className="bg-white text-blue-600 px-4 py-2 rounded font-medium"
     >
-      + Add Medication
+      Add Medication
     </Link>
   </nav>
 );

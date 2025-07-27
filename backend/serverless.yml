@@ -67,20 +67,29 @@ functions:
     events:
       - http:
           path: medications/{id}/take
-          method: post
+          method: put
           cors:
             origin: "*"
             headers:
               - Content-Type
-              - X-Amz-Date
-              - Authorization
               - X-Api-Key
-              - X-Amz-Security-Token
-              - x-api-key
               - Accept
             allowCredentials: false
-          private: true
-
+          # private: true
+  toggleActivity:
+    handler: src/handlers/toggleActivity.handler
+    events:
+      - http:
+          path: medications/{id}/toggle
+          method: put
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Api-Key
+              - Accept
+            allowCredentials: false
+          # private: true
 plugins:
   - serverless-offline
 

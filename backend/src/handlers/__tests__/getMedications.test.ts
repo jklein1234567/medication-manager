@@ -38,7 +38,7 @@ jest.mock('aws-sdk', () => {
   };
 });
 
-describe('getMedications handler', () => {
+describe('getMedications', () => {
   let docClient: any;
 
   beforeEach(() => {
@@ -52,7 +52,7 @@ describe('getMedications handler', () => {
 
     const result = await handler(dummyEvent, dummyContext, dummyCallback) as APIGatewayProxyResult;
 
-    expect(result.statusCode).toBe(200);
+    expect(result.statusCode).toEqual(200);
     expect(JSON.parse(result.body)).toEqual(mockedItems);
   });
 
@@ -63,7 +63,7 @@ describe('getMedications handler', () => {
 
     const result = await handler(dummyEvent, dummyContext, dummyCallback) as APIGatewayProxyResult;
 
-    expect(result.statusCode).toBe(500);
-    expect(JSON.parse(result.body).message).toBe('Internal server error');
+    expect(result.statusCode).toEqual(500);
+    expect(JSON.parse(result.body).message).toEqual('Internal server error');
   });
 });

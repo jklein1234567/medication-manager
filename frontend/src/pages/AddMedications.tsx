@@ -79,7 +79,6 @@ export const AddMedication: FC = () => {
           placeholder="Times (e.g. 08:00, 20:00)"
           value={form.times}
           onChange={(e) => setForm({ ...form, times: e.target.value })}
-          required
         />
 
         {form.scheduleType === ScheduleType.WEEKLY && (

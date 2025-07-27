@@ -77,7 +77,7 @@ export const Calendar: FC<Props> = ({
                 greyedOut ? "bg-gray-100 text-gray-400 pointer-events-none" : ""
               } ${today ? "bg-yellow-100 border-yellow-500" : ""}`}
             >
-              <div className="text-sm font-semibold">{day.format("D")}</div>
+              <div className="flex flex-col gap-1 mt-1 text-sm font-semibold">{day.format("D")}</div>
               {meds
                 .filter(
                   (m) =>
@@ -88,7 +88,7 @@ export const Calendar: FC<Props> = ({
                 .map((med) => (
                   <button
                     key={med.id}
-                    className={`text-xs underline hover:cursor-pointer ${
+                    className={`flex mb-1 text-xs hover:cursor-pointer ${
                       greyedOut && !today ? "text-gray-400" : "text-blue-600"
                     }`}
                     disabled={greyedOut && !today}
