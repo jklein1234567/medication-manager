@@ -83,9 +83,10 @@ export const Calendar: FC<Props> = ({
               {meds
                 .filter(
                   (m) =>
-                    m.scheduleType === "daily" ||
-                    (m.scheduleType === "weekly" &&
-                      m.daysOfWeek?.includes(day.format("ddd") as Day))
+                    m.isActive &&
+                    (m.scheduleType === "daily" ||
+                      (m.scheduleType === "weekly" &&
+                        m.daysOfWeek?.includes(day.format("ddd") as Day)))
                 )
                 .map((med) => {
                   const isTaken = med.takenLog?.includes(

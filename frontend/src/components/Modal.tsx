@@ -19,8 +19,6 @@ export const Modal: FC<Props> = ({
 }) => {
   const { daysOfWeek, times, id, isActive } = selectedMed;
 
-  console.log(isActive, 'isActive')
-
   const isTodayOrBefore = moment().isSameOrAfter(moment(), "day");
 
   const handleToggleStatus = async () => {
@@ -28,8 +26,10 @@ export const Modal: FC<Props> = ({
       await toggleActivity(id);
       const updatedMeds = await getMedications();
       setMeds(updatedMeds);
-  
-      const updatedSelected = updatedMeds.find((med: Medication) => med.id === id);
+
+      const updatedSelected = updatedMeds.find(
+        (med: Medication) => med.id === id
+      );
       if (updatedSelected) {
         setSelectedMed(updatedSelected);
       }
@@ -43,7 +43,7 @@ export const Modal: FC<Props> = ({
       <div className="relative bg-white w-full max-w-xl mx-4 p-8 rounded-xl shadow-xl">
         {/* Toggle Button in Top Right */}
         <button
-          className={`absolute top-4 right-4 px-3 py-1 text-sm rounded font-medium transition text-white ${
+          className={`absolute top-4 right-4 px-3 py-1 text-sm rounded font-medium transition hover:cursor-pointer text-white ${
             isActive
               ? "bg-green-500 hover:bg-green-600"
               : "bg-gray-400 hover:bg-gray-500"
