@@ -9,10 +9,14 @@ export const AddMedication: FC = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
+    type: "",
+    purpose: "",
+    times: 1,
     scheduleType: ScheduleType.DAILY,
-    times: "",
     daysOfWeek: [] as Day[],
+    dayOfMonth: "",
   });
+
   const [toast, setToast] = useState<{
     message: string;
     type: ToastType;
@@ -21,12 +25,31 @@ export const AddMedication: FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
+      if (
+        form.scheduleType === ScheduleType.WEEKLY &&
+        form.daysOfWeek.length === 0
+      ) {
+        setToast({
+          message: "Select at least one day for weekly meds",
+          type: "error",
+        });
+        return;
+      }
+
+      if (form.scheduleType === ScheduleType.MONTHLY && !form.dayOfMonth) {
+        setToast({
+          message: "Select a day of the month for monthly meds",
+          type: "error",
+        });
+        return;
+      }
+
       await addMedication({
         ...form,
-        times: form.times.split(",").map((t) => t.trim()),
         isActive: true,
         takenLog: [],
       });
+
       setToast({ message: "Successfully added!", type: "success" });
       setTimeout(() => navigate("/"), 3000);
     } catch {
@@ -52,7 +75,8 @@ export const AddMedication: FC = () => {
           onClose={() => setToast(null)}
         />
       )}
-       <h1 className="text-2xl font-bold mb-6 text-center">Add Medication</h1>
+
+      <h1 className="text-2xl font-bold mb-6 text-center">Add Medication</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           className="w-full border p-2 rounded"
@@ -60,6 +84,32 @@ export const AddMedication: FC = () => {
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           required
+        />
+
+        <input
+          className="w-full border p-2 rounded"
+          placeholder="Type (e.g. Tablet, Injection)"
+          value={form.type}
+          onChange={(e) => setForm({ ...form, type: e.target.value })}
+          required
+        />
+
+        <input
+          className="w-full border p-2 rounded"
+          placeholder="Purpose (e.g. Blood pressure)"
+          value={form.purpose}
+          onChange={(e) => setForm({ ...form, purpose: e.target.value })}
+          required
+        />
+
+        <input
+          type="number"
+          className="w-full border p-2 rounded"
+          placeholder="Times (per schedule)"
+          value={form.times}
+          onChange={(e) => setForm({ ...form, times: Number(e.target.value) })}
+          required
+          min={1}
         />
 
         <select
@@ -73,13 +123,6 @@ export const AddMedication: FC = () => {
           <option value={ScheduleType.WEEKLY}>Weekly</option>
           <option value={ScheduleType.MONTHLY}>Monthly</option>
         </select>
-
-        <input
-          className="w-full border p-2 rounded"
-          placeholder="Times (e.g. 08:00, 20:00)"
-          value={form.times}
-          onChange={(e) => setForm({ ...form, times: e.target.value })}
-        />
 
         {form.scheduleType === ScheduleType.WEEKLY && (
           <div className="flex flex-wrap gap-2">
@@ -98,9 +141,22 @@ export const AddMedication: FC = () => {
           </div>
         )}
 
+        {form.scheduleType === ScheduleType.MONTHLY && (
+          <input
+            type="number"
+            className="w-full border p-2 rounded"
+            placeholder="Day of the month (e.g. 15)"
+            value={form.dayOfMonth}
+            onChange={(e) => setForm({ ...form, dayOfMonth: e.target.value })}
+            min={1}
+            max={31}
+            required
+          />
+        )}
+
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:cursor-pointer"
         >
           Submit
         </button>

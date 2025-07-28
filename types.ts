@@ -18,10 +18,15 @@ export enum ScheduleType {
     id: string;
     name: string;
     scheduleType: ScheduleType;
-    times?: string[]; // changed to string[] for multiple times per day
-    daysOfWeek?: Day[]; // only used for weekly schedule
+    times: number;
+     // only used for weekly schedule
+    daysOfWeek?: Day[];
+    dayOfMonth?: string;
     isActive: boolean;
-    takenLog: string[]; // ISO datetime strings
+    // ISO datetime strings
+    takenLog: string[];
+    purpose: string;
+    type: string;
   }
 
   export type ToastType = "success" | "error";

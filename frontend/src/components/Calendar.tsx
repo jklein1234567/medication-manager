@@ -17,7 +17,7 @@ export const Calendar: FC<Props> = ({
   setCurrentDate,
   setSelectedMed,
   setSelectedDate,
-}: Props) => {
+}) => {
   const start = currentDate.clone().startOf("month");
   const end = currentDate.clone().endOf("month");
 
@@ -25,9 +25,10 @@ export const Calendar: FC<Props> = ({
   const endOffset = 6 - end.day(); // 6 = Saturday
   const startCalendar = start.clone().subtract(startOffset, "days");
   const endCalendar = end.clone().add(endOffset, "days");
-  const days = [];
+
+  const days: Moment[] = [];
   const day = startCalendar.clone();
-  while (day.isBefore(endCalendar, "day") || day.isSame(endCalendar, "day")) {
+  while (day.isSameOrBefore(endCalendar, "day")) {
     days.push(day.clone());
     day.add(1, "day");
   }
@@ -62,9 +63,7 @@ export const Calendar: FC<Props> = ({
 
       <div className="grid grid-cols-7 gap-4 text-center font-medium mb-2">
         {Object.values(Day).map((d, i) => (
-          <div key={i} className="text-gray-700 text-center font-medium mb-2">
-            {d}
-          </div>
+          <div key={i} className="text-gray-700">{d}</div>
         ))}
       </div>
 
@@ -72,6 +71,7 @@ export const Calendar: FC<Props> = ({
         {days.map((calendarDay) => {
           const greyedOut = calendarDay.isBefore(moment(), "day");
           const today = calendarDay.isSame(moment(), "day");
+
           return (
             <div
               key={calendarDay.toISOString()}
@@ -82,17 +82,28 @@ export const Calendar: FC<Props> = ({
               <div className="flex flex-col gap-1 mt-1 text-sm font-semibold">
                 {calendarDay.format("D")}
               </div>
+
               {meds
-                .filter(
-                  (m) =>
-                    m.isActive &&
-                    (m.scheduleType === "daily" ||
-                      (m.scheduleType === "weekly" &&
-                        m.daysOfWeek?.includes(calendarDay.format("ddd") as Day)))
-                )
+                .filter((m) => {
+                  if (!m.isActive) return false;
+
+                  const dayName = calendarDay.format("ddd") as Day;
+                  const dateStr = calendarDay.format("YYYY-MM-DD");
+                  const isWeekly =
+                    m.scheduleType === "weekly" &&
+                    m.daysOfWeek?.includes(dayName);
+                  const isDaily = m.scheduleType === "daily";
+                  const isMonthly =
+                    m.scheduleType === "monthly" &&
+                    m.dayOfMonth &&
+                    calendarDay.date() === Number(m.dayOfMonth);
+
+                  return isDaily || isWeekly || isMonthly;
+                })
                 .map((med) => {
                   const dateStr = calendarDay.format("YYYY-MM-DD");
                   const isTaken = med.takenLog?.includes(dateStr);
+
                   return (
                     <button
                       key={med.id}
