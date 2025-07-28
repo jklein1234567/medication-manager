@@ -24,6 +24,7 @@ export const Navbar: FC = () => {
             />
           </>
         ) : (
+            // Displays the add user form if no user is selected
           <NavbarLink route="/add-user" title="Add User" />
         )}
       </div>

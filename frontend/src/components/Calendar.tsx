@@ -21,8 +21,8 @@ export const Calendar: FC<Props> = ({
   const start = currentDate.clone().startOf("month");
   const end = currentDate.clone().endOf("month");
 
-  const startOffset = start.day(); // 0 = Sunday
-  const endOffset = 6 - end.day(); // 6 = Saturday
+  const startOffset = start.day();
+  const endOffset = 6 - end.day();
   const startCalendar = start.clone().subtract(startOffset, "days");
   const endCalendar = end.clone().add(endOffset, "days");
 
@@ -63,7 +63,9 @@ export const Calendar: FC<Props> = ({
 
       <div className="grid grid-cols-7 gap-4 text-center font-medium mb-2">
         {Object.values(Day).map((d, i) => (
-          <div key={i} className="text-gray-700">{d}</div>
+          <div key={i} className="text-gray-700">
+            {d}
+          </div>
         ))}
       </div>
 

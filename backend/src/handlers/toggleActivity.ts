@@ -21,7 +21,6 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   }
 
   try {
-    // 1. Get current item
     const getCmd = new GetItemCommand({
       TableName: process.env.DYNAMO_TABLE,
       Key: marshall({ id }),
@@ -39,7 +38,6 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     const med = unmarshall(result.Item);
     const newIsActive = !med.isActive;
 
-    // 2. Update with flipped isActive
     const updateCmd = new UpdateItemCommand({
       TableName: process.env.DYNAMO_TABLE,
       Key: marshall({ id }),

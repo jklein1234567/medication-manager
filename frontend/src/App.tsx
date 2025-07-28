@@ -12,6 +12,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* This layout component wraps every route with a header */}
         <Route element={<Layout />}>
           <Route path="/" element={<UserList />} />
           <Route path="/add-user" element={<AddUser />} />
