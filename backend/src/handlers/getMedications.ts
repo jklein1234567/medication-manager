@@ -4,32 +4,42 @@ import { logger } from "../utils/logger";
 
 const db = new DynamoDB.DocumentClient();
 
-export const handler: APIGatewayProxyHandler = async () => {
+export const handler: APIGatewayProxyHandler = async (event) => {
+  const userId = event.queryStringParameters?.userId;
+
+  if (!userId) {
+    return {
+      statusCode: 400,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ error: "Missing userId" }),
+    };
+  }
+
   try {
-    logger.info("Fetching medications from DynamoDB");
-    const result = await db.scan({
-      TableName: process.env.DYNAMO_TABLE!,
-    }).promise();
+    logger.info(`Fetching medications for user: ${userId}`);
+    const result = await db
+      .query({
+        TableName: process.env.DYNAMO_TABLE!,
+        IndexName: "userId-index",
+        KeyConditionExpression: "userId = :uid",
+        ExpressionAttributeValues: {
+          ":uid": userId,
+        },
+      })
+      .promise();
     logger.info("Fetched medications count", { count: result.Items?.length });
 
     return {
       statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      },
+      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify(result.Items),
     };
   } catch (err: any) {
-    logger.error(`Create medication failed: ${err.message}`, {
-      error: err,
-      stack: err.stack,
-    });    return {
+    logger.error("getMedications error", { message: err.message });
+    return {
       statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      },
-      body: JSON.stringify({ message: "Internal server error", details: err.message }),
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ message: "Internal server error" }),
     };
   }
 };
-

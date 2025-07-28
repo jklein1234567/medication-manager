@@ -13,10 +13,18 @@ export enum ScheduleType {
     SATURDAY = 'Sat',
     SUNDAY = 'Sun',
   }
+
+  export interface User {
+    id: string;
+    name: string;
+    email: string;
+    image?: string
+  }
   
   export interface Medication {
     id: string;
     name: string;
+    userId: string;
     scheduleType: ScheduleType;
     times: number;
      // only used for weekly schedule

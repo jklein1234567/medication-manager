@@ -8,6 +8,7 @@ provider:
   stage: dev
   environment:
     DYNAMO_TABLE: medications
+    USERS_TABLE: users
   iam:
     role:
       statements:
@@ -17,11 +18,29 @@ provider:
             - dynamodb:GetItem
             - dynamodb:Scan
             - dynamodb:UpdateItem
+            - dynamodb:Query
           Resource:
             - arn:aws:dynamodb:us-east-1:178173414121:table/medications
+            - arn:aws:dynamodb:us-east-1:178173414121:table/users
+
   apiGateway:
     apiKeys:
       - name: myDevApiKey
+
+package:
+  individually: true
+  exclude:
+    - node_modules/**
+    - logs/**
+    - .serverless/**
+    - .vscode/**
+    - coverage/**
+    - src/handlers/__tests__/**
+    - "*.png"
+    - "*.jpg"
+    - "*.jpeg"
+    - "*.zip"
+    - "**/*.test.ts"
 
 functions:
   createMedication:
@@ -41,7 +60,6 @@ functions:
               - x-api-key
               - Accept
             allowCredentials: false
-          # private: true
 
   getMedications:
     handler: src/handlers/getMedications.handler
@@ -60,7 +78,6 @@ functions:
               - x-api-key
               - Accept
             allowCredentials: false
-          # private: true
 
   updateTakeLog:
     handler: src/handlers/updateTakeLog.handler
@@ -75,7 +92,7 @@ functions:
               - X-Api-Key
               - Accept
             allowCredentials: false
-          # private: true
+
   toggleActivity:
     handler: src/handlers/toggleActivity.handler
     events:
@@ -89,7 +106,49 @@ functions:
               - X-Api-Key
               - Accept
             allowCredentials: false
-          # private: true
+
+  createUser:
+    handler: src/handlers/createUser.handler
+    events:
+      - http:
+          path: users
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Api-Key
+              - Accept
+            allowCredentials: false
+
+  getAllUsers:
+    handler: src/handlers/getAllUsers.handler
+    events:
+      - http:
+          path: users
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Api-Key
+              - Accept
+            allowCredentials: false
+
+  getUserById:
+    handler: src/handlers/getUserById.handler
+    events:
+      - http:
+          path: users/{id}
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Api-Key
+              - Accept
+            allowCredentials: false
+
 plugins:
   - serverless-offline
 
@@ -99,6 +158,27 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: medications
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: userId-index
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: users
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S

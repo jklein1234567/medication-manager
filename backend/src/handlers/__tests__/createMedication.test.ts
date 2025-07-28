@@ -25,14 +25,24 @@ jest.mock('aws-sdk', () => {
 describe('createMedication', () => {
   const mockData = {
     name: 'Advil',
+    userId: 'user-123',
     scheduleType: 'daily',
-    times: ['08:00'],
+    times: 1,
+    daysOfWeek: [],
+    isActive: true,
+    takenLog: [],
+    purpose: 'Pain relief',
+    type: 'OTC',
   };
 
   let docClient: any;
 
   beforeEach(() => {
     docClient = new DynamoDB.DocumentClient();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('creates a medication and returns 201', async () => {

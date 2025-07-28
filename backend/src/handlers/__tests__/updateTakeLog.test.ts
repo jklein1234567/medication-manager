@@ -16,6 +16,9 @@ describe("updateTakeLog", () => {
 
   beforeEach(() => {
     clientMock.prototype.send = mockSend;
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
   });
 

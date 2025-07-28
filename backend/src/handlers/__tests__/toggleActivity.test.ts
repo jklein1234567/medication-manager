@@ -16,6 +16,9 @@ describe("toggleActivity handler", () => {
 
   beforeEach(() => {
     clientMock.prototype.send = mockSend;
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
   });
 

@@ -18,7 +18,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       !data.scheduleType ||
       !data.times ||
       !data.purpose ||
-      !data.type
+      !data.type ||
+      !data.userId
     ) {
       return {
         statusCode: 400,
@@ -32,6 +33,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     const medication: Medication = {
       id,
       name: data.name,
+      userId: data.userId,
       scheduleType: data.scheduleType,
       times: Number(data.times),
       isActive: true,
