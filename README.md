@@ -51,7 +51,6 @@ To run this project locally, you’ll need to start both the frontend and backen
 
 ```bash
 git clone https://github.com/your-username/medication-manager.git
-cd medication-manager
 ```
 
 ---
@@ -117,7 +116,7 @@ The frontend is built with React, TypeScript, Vite, Tailwind CSS, and uses react
 4. Create a `.env` file with your API URL:
 
    ```env
-   VITE_API_URL=https://your-api-url.amazonaws.com
+   VITE_API_URL=http://localhost:3000/dev
    ```
 
 ### 🧪 Run Tests
@@ -178,6 +177,6 @@ PRs, ideas, and feedback are welcome! Fork the repo, make your changes, and subm
 
 ## 📧 Contact
 
-Made with 💙 by [Your Name or GitHub Handle]
+Made with 💙 by Jordan K
 
 ---
