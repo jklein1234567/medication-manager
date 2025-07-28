@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import type { FC } from "react";
-import { NavbarLinkButton } from "./NavbarLink";
+import { NavbarLink } from "./NavbarLink";
 
 export const Navbar: FC = () => {
   const { id: userId } = useParams();
@@ -13,18 +13,18 @@ export const Navbar: FC = () => {
       <div className="flex gap-4">
         {userId ? (
           <>
-            <NavbarLinkButton route={`/${userId}/calendar`} title="Calendar" />
-            <NavbarLinkButton
+            <NavbarLink route={`/${userId}/calendar`} title="Calendar" />
+            <NavbarLink
               route={`/${userId}/inactive-medications`}
               title="Inactive Medications"
             />
-            <NavbarLinkButton
+            <NavbarLink
               route={`/${userId}/add-medication`}
               title="Add Medication"
             />
           </>
         ) : (
-          <NavbarLinkButton route="/add-user" title="Add User" />
+          <NavbarLink route="/add-user" title="Add User" />
         )}
       </div>
     </nav>

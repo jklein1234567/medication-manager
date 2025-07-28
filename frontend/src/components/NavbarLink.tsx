@@ -6,7 +6,7 @@ interface Props {
   title: string;
 }
 
-export const NavbarLinkButton: FC<Props> = ({ route, title }: Props) => {
+export const NavbarLink: FC<Props> = ({ route, title }: Props) => {
   const { pathname } = useLocation();
   return (
     <Link
