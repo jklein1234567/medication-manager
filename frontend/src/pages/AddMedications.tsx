@@ -1,12 +1,14 @@
 import { useState } from "react";
 import type { FC, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { addMedication } from "../api";
 import { Toaster } from "../components";
 import { Day, ScheduleType, ToastType } from "../../../types";
 
 export const AddMedication: FC = () => {
   const navigate = useNavigate();
+  const { id: userId } = useParams<{ id: string }>();
+
   const [form, setForm] = useState({
     name: "",
     type: "",
@@ -24,6 +26,12 @@ export const AddMedication: FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (!userId) {
+      setToast({ message: "Missing user ID", type: "error" });
+      return;
+    }
+
     try {
       if (
         form.scheduleType === ScheduleType.WEEKLY &&
@@ -46,12 +54,13 @@ export const AddMedication: FC = () => {
 
       await addMedication({
         ...form,
+        userId,
         isActive: true,
         takenLog: [],
       });
 
       setToast({ message: "Successfully added!", type: "success" });
-      setTimeout(() => navigate("/"), 3000);
+      setTimeout(() => navigate(`/${userId}/calendar`), 3000); // ✅ Redirect to calendar for the same user
     } catch {
       setToast({ message: "Failed to add medication", type: "error" });
     }

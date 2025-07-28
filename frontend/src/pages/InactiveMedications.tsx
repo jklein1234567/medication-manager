@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FC } from "react";
+import { useParams } from "react-router-dom";
 import { getMedications, toggleActivity } from "../api";
 import type { Medication } from "../../../types";
 
@@ -7,8 +8,10 @@ export const InactiveMedications: FC = () => {
   const [inactiveMeds, setInactiveMeds] = useState<Medication[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { id: userId } = useParams<{ id: string }>();
+
   const fetchInactiveMeds = async () => {
-    const all = await getMedications();
+    const all = await getMedications(userId as string);
     setInactiveMeds(all.filter((med: Medication) => !med.isActive));
     setLoading(false);
   };

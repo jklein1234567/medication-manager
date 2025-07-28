@@ -1,16 +1,25 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import { HomePage, AddMedication, InactiveMedications } from "./pages";
+import {
+  AddMedication,
+  InactiveMedications,
+  UserList,
+  UserCalendar,
+} from "./pages";
 import { Layout } from "./Layout";
-export default function App() {
+
+const App = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<UserList />} />
         <Route element={<Layout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/add" element={<AddMedication />} />
-          <Route path="/inactive" element={<InactiveMedications />} />
+          <Route path="/:id/calendar" element={<UserCalendar />} />
+          <Route path="/:id/add" element={<AddMedication />} />
+          <Route path="/:id/inactive" element={<InactiveMedications />} />
         </Route>
       </Routes>
     </BrowserRouter>
   );
-}
+};
+
+export default App;
