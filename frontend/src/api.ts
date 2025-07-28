@@ -17,7 +17,7 @@ export const getUserById = async (id: string) => {
   return await res.json();
 };
 
-export const createUser = async (data: User) => {
+export const createUser = async (data: Omit<User, 'id'>) => {
   const res = await axios.post(`${VITE_API_BASE}/users`, data, {
     headers: {
       "x-api-key": VITE_API_KEY,

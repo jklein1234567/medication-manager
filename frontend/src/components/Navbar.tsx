@@ -11,12 +11,21 @@ export const Navbar: FC = () => {
         💊 Medication Manager
       </Link>
       <div className="flex gap-4">
-        <NavbarLinkButton route={`/${userId}/calendar`} title="Calendar" />
-        <NavbarLinkButton
-          route={`/${userId}/inactive`}
-          title="Inactive Medications"
-        />
-        <NavbarLinkButton route={`/${userId}/add`} title="Add Medication" />
+        {userId ? (
+          <>
+            <NavbarLinkButton route={`/${userId}/calendar`} title="Calendar" />
+            <NavbarLinkButton
+              route={`/${userId}/inactive-medications`}
+              title="Inactive Medications"
+            />
+            <NavbarLinkButton
+              route={`/${userId}/add-medication`}
+              title="Add Medication"
+            />
+          </>
+        ) : (
+          <NavbarLinkButton route="/add-user" title="Add User" />
+        )}
       </div>
     </nav>
   );
